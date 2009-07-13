@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + "/test_helper")
 
 class RainbowCloth::GreenClothTest < Test::Unit::TestCase
   def assert_renders_greencloth(greencloth, html)
-    assert_equal greencloth, RainbowCloth.new(html).to_greencloth
+    assert_equal greencloth, RainbowCloth.new(html, :xhtml_strict => true).to_greencloth
   end
 
   context "Converting HTML to greencloth" do
