@@ -2,6 +2,16 @@ require File.expand_path(File.dirname(__FILE__) + "/../undress")
 
 module Undress
   class Textile < Grammar
+
+    # delete tabs and newlines from inside elements
+    pre_processing("*") {|e| 
+      if e.parent.class == Hpricot::Doc && e.inner_html != "" && e.is_a?(Hpricot::Elem) && e.name != "pre"
+        path = e.css_path
+        e.inner_html = e.inner_html.gsub(/\n|\t/,"")
+        e = e.parent.at path
+      end
+    }
+
     # whitespace handling
     post_processing(/\n\n+/, "\n\n")
     post_processing(/\A\s+/, "")
