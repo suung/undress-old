@@ -4,13 +4,11 @@ module Undress
   class Textile < Grammar
 
     # delete tabs and newlines from inside elements
-    pre_processing("*") {|e| 
-      if e.parent.class == Hpricot::Doc && e.inner_html != "" && e.is_a?(Hpricot::Elem) && e.name != "pre"
-        path = e.css_path
+    pre_processing("*") do |e| 
+      if e.elem? && e.parent.doc? && e.inner_html != "" && e.name != "pre"
         e.inner_html = e.inner_html.gsub(/\n|\t/,"")
-        e = e.parent.at path
       end
-    }
+    end
 
     # whitespace handling
     post_processing(/\n\n+/, "\n\n")
