@@ -5,6 +5,15 @@ class RainbowCloth::GreenClothTest < Test::Unit::TestCase
     assert_equal greencloth, RainbowCloth.new(html, :xhtml_strict => true).to_greencloth
   end
 
+  # outline
+  context "outline" do
+    test "table of contents toc" do
+      html = "<ul class='toc'><li class='toc1'><a href='#fruits'><span>1</span> Fruits</a></li><ul><li class='toc2'><a href='#tasty-apples'><span>1.1</span> Tasty Apples</a></li><ul><li class='toc3'><a href='green'><span>1.1.1</span> Green</a></li><li class='toc3'><a href='#red'><span>1.1.2</span> Red</a></li></ul>"
+      greencloth = "[[toc]]"
+      assert_renders_greencloth greencloth, html 
+    end
+  end
+
   # basics
   context "basics" do
     test "headers" do

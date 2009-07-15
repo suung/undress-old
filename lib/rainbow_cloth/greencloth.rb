@@ -7,6 +7,11 @@ module RainbowCloth
 
   class GreenCloth < Textile
     
+    # table of contents
+    pre_processing("ul.toc") do |toc|
+      toc.swap "[[toc]]"
+    end
+
     # headings
     rule_for(:h1) {|e| process_headings(e) }
     rule_for(:h2) {|e| process_headings(e) }
