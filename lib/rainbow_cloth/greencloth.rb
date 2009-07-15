@@ -11,6 +11,19 @@ module RainbowCloth
     rule_for(:a) {|e|
       "[%s%s%s]" % process_links_and_anchors(e)
     }
+    
+    # lists
+    rule_for(:li) {|e|
+      offset = ""
+      li = e
+      while li.parent
+        if    li.parent.name == "ul" then offset = "*#{offset}"
+        elsif li.parent.name == "ol" then offset = "##{offset}"
+        else  return offset end
+        li = li.parent.parent ? li.parent.parent : nil 
+      end
+      "\n#{offset} #{content_of(e)}"
+    }
 
     def process_links_and_anchors(e)
       inner, name, href = e.inner_html, e.get_attribute("name"), e.get_attribute("href")

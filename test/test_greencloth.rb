@@ -5,7 +5,55 @@ class RainbowCloth::GreenClothTest < Test::Unit::TestCase
     assert_equal greencloth, RainbowCloth.new(html, :xhtml_strict => true).to_greencloth
   end
 
-  context "Converting HTML to greencloth" do
+  # basics
+  context "Basic conversions" do
+    test "headers" do
+      html = "<h1 class=\"first\">header one</h1>\n<h2>header two</h2>"
+      greencloth = "header one\n=====\nheader two\n----"
+      assert_renders_greencloth greencloth, html 
+    end
+  end
+
+  # lists
+  # TODO: start attribute not implemented
+  context "Converting html lists to greencloth" do
+    test "hard break in list" do
+      html = "<ul>\n\t<li>first line</li>\n\t<li>second<br />\n\tline</li>\n\t<li>third line</li>\n</ul>\n"
+      greencloth = "* first line\n* second\nline\n* third line\n" 
+      assert_renders_greencloth greencloth, html 
+    end
+
+    test "mixed nesting" do
+      html = "<ul><li>bullet\n<ol>\n<li>number</li>\n<li>number\n<ul>\n\t<li>bullet</li>\n</ul></li>\n<li>number</li>\n<li>number with<br />a break</li>\n</ol></li>\n<li>bullet\n<ul><li>okay</li></ul></li></ul>"
+      greencloth = "* bullet\n*# number\n*# number\n*#* bullet\n*# number\n*# number with\na break\n* bullet\n** okay\n"
+      assert_renders_greencloth greencloth, html 
+    end
+
+    test "list continuation" do # uses start
+      html = "<ol><li>one</li><li>two</li><li>three</li></ol><ol><li>one</li><li>two</li><li>three</li></ol><ol start='4'><li>four</li><li>five</li><li>six</li></ol>"
+      greencloth = "# one\n# two\n# three\n\n# one\n# two\n# three\n\n# four\n# five\n# six\n"
+      assert_renders_greencloth greencloth, html 
+    end
+
+    test "continue after break" do # uses start
+      html = "<ol><li>one</li><li>two</li><li>three</li></ol><p>test</p><ol><li>one</li><li>two</li><li>three</li></ol><p>test</p><ol start='4'><li>four</li><li>five</li><li>six</li></ol>"
+      greencloth = "# one\n# two\n# three\n\ntest\n\n# one\n# two\n# three\n\ntest\n\n# four\n# five\n# six\n"
+      assert_renders_greencloth greencloth, html 
+    end
+
+    test "continue list when prior list contained nested list" do # uses start
+      greencloth = "# one\n# two\n# three\n\n# four\n# five\n## sub-note\n## another sub-note\n# six\n\n# seven\n# eight\n# nine\n"
+      html = "<ol><li>one</li><li>two</li><li>three</li></ol><ol start='4'><li>four</li><li>five<ol><li>sub-note</li><li>another sub-note</li></ol></li><li>six</li></ol><ol start='7'><li>seven</li><li>eight</li><li>nine</li></ol>"
+      assert_renders_greencloth greencloth, html 
+    end
+
+    test "" do
+
+    end
+  end
+
+  # links
+  context "Converting html links to greencloth" do
     test "convert a link to a wiki page inside a paragraph" do
       html = "<p>this is a <a href='/page/plain-link'>plain link</a> in some text</p>"
       greencloth = "this is a [plain link] in some text\n"
