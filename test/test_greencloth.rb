@@ -5,11 +5,30 @@ class RainbowCloth::GreenClothTest < Test::Unit::TestCase
     assert_equal greencloth, RainbowCloth.new(html, :xhtml_strict => true).to_greencloth
   end
 
-  # basics
-  context "Basic conversions" do
-    test "headers" do
-      html = "<h1 class=\"first\">header one</h1>\n<h2>header two</h2>"
-      greencloth = "header one\n=====\nheader two\n----"
+  # sections
+  # allways we render h1 with ==== and h2 with ----
+  context "Convert sections" do
+    test "one section no heading" do 
+      html = "<div class='wiki_section' id='wiki_section-0'><p>start unheaded section</p><p>line line line</p></div>"
+      greencloth = "start unheaded section\n\nline line line\n"
+      assert_renders_greencloth greencloth, html 
+    end
+
+    test "one section with heading" do
+      html = "<div class='wiki_section' id='wiki_section-0'><h2 class='first'>are you ready?!!?</h2><p>here we go now!</p></div>"
+      greencloth = "are you ready?!!?\n-----------------\n\nhere we go now!\n"
+      assert_renders_greencloth greencloth, html 
+    end
+
+    test "all headings" do
+      html = "<h1>First</h1><h2>Second</h2><h3>Tres</h3><h4>Cuatro</h4><h5>Five</h5><h6>Six</h6>"
+      greencloth = "First\n=====\n\nSecond\n------\n\nh3. Tres\n\nh4. Cuatro\n\nh5. Five\n\nh6. Six\n"
+      assert_renders_greencloth greencloth, html 
+    end
+
+    test "multiple sections with text" do
+      html = "<div class='wiki_section' id='wiki_section-0'><h2 class='first'>Section One</h2><p>section one line one is here<br />section one line two is next</p><p>Here is section one still</p></div><div class='wiki_section' id='wiki_section-1'><h1>Section Two</h1><p>Section two first line<br />Section two another line</p></div><div class='wiki_section' id='wiki_section-2'><h2>Section 3 with h2</h2><p>One more line for section 3</p></div><div class='wiki_section' id='wiki_section-3'><h3>final section 4</h3><p>section 4 first non-blank line</p>\n</div>"
+      greencloth = "Section One\n-----------\n\nsection one line one is here\nsection one line two is next\n\nHere is section one still\n\nSection Two\n===========\n\nSection two first line\nSection two another line\n\nSection 3 with h2\n-----------------\n\nOne more line for section 3\n\nh3. final section 4\n\nsection 4 first non-blank line\n"
       assert_renders_greencloth greencloth, html 
     end
   end

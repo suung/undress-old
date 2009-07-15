@@ -6,6 +6,14 @@ module RainbowCloth
   end
 
   class GreenCloth < Textile
+    
+    # headings
+    rule_for(:h1) {|e| process_headings(e) }
+    rule_for(:h2) {|e| process_headings(e) }
+    rule_for(:h3) {|e| process_headings(e) }
+    rule_for(:h4) {|e| process_headings(e) }
+    rule_for(:h5) {|e| process_headings(e) }
+    rule_for(:h6) {|e| process_headings(e) }
 
     # inline elements
     rule_for(:a) {|e|
@@ -24,6 +32,12 @@ module RainbowCloth
       end
       "\n#{offset} #{content_of(e)}"
     }
+
+    def process_headings(h) 
+      return "#{h.inner_text}\n#{'=' * h.inner_text.size}\n\n" if h.name == "h1"
+      return "#{h.inner_text}\n#{'-' * h.inner_text.size}\n\n" if h.name == "h2"
+      return "#{h.name}. #{h.inner_text}\n\n"
+    end
 
     def process_links_and_anchors(e)
       inner, name, href = e.inner_html, e.get_attribute("name"), e.get_attribute("href")
