@@ -5,6 +5,22 @@ class RainbowCloth::GreenClothTest < Test::Unit::TestCase
     assert_equal greencloth, RainbowCloth.new(html, :xhtml_strict => true).to_greencloth
   end
 
+  # embed and object
+  # the elements pass trough but the order of the attributes change
+  context "embed and object" do
+    test "embed" do
+      greencloth = "do you like my embedded blip.tv <embed src=\"http://blip.tv/play/Ac3GfI+2HA\" allowfullscreen=\"true\" type=\"application/x-shockwave-flash\" allowscriptaccess=\"always\" height=\"510\" width=\"720\" />?\n"
+      html       = "<p>do you like my embedded blip.tv <embed src='http://blip.tv/play/Ac3GfI+2HA' allowfullscreen='true' type='application/x-shockwave-flash' allowscriptaccess='always' height='510' width='720' />?</p>"
+      assert_renders_greencloth greencloth, html 
+    end
+
+    test "object" do
+      greencloth = "do you like my embedded youtube <object height=\"344\" width=\"425\"><param name=\"movie\" value=\"http://www.youtube.com/v/suvDQoXA-TA&hl=en&fs=1\" /><param name=\"allowFullScreen\" value=\"true\" /><embed src=\"http://www.youtube.com/v/suvDQoXA-TA&hl=en&fs=1\" allowfullscreen=\"true\" type=\"application/x-shockwave-flash\" height=\"344\" width=\"425\" /></object>?\n"
+      html = "<p>do you like my embedded youtube <object width='425' height='344'><param name='movie' value='http://www.youtube.com/v/suvDQoXA-TA&hl=en&fs=1' /><param name='allowFullScreen' value='true' /><embed src='http://www.youtube.com/v/suvDQoXA-TA&hl=en&fs=1' type='application/x-shockwave-flash' width='425' height='344' allowfullscreen='true' /></object>?</p>"
+      assert_renders_greencloth greencloth, html 
+    end
+  end
+
   # outline
   # don't allow link to anchors or anchor defs inside hx, greencloth -> html
   # take cares of it, so we are only allowing links inside hx elements for now

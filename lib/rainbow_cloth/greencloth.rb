@@ -38,6 +38,19 @@ module RainbowCloth
       "\n#{offset} #{content_of(e)}"
     }
 
+    # embed, object, param
+    rule_for(:embed) {|e|
+      e.to_html
+    }
+
+    rule_for(:object) {|e|
+      e.to_html
+    }
+    
+    rule_for(:param) {|e|
+      e.to_html
+    }
+
     def process_headings(h) 
       h.children.each {|e| 
         next if e.class == Hpricot::Text
