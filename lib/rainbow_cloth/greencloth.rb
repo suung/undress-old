@@ -22,7 +22,7 @@ module RainbowCloth
 
     # inline elements
     rule_for(:a) {|e|
-      "[%s%s%s]" % process_links_and_anchors(e)
+      process_links_and_anchors(e)
     }
     
     # lists
@@ -39,12 +39,17 @@ module RainbowCloth
     }
 
     def process_headings(h) 
-      return "#{h.inner_text}\n#{'=' * h.inner_text.size}\n\n" if h.name == "h1"
-      return "#{h.inner_text}\n#{'-' * h.inner_text.size}\n\n" if h.name == "h2"
-      return "#{h.name}. #{h.inner_text}\n\n"
+      h.children.each {|e| 
+        next if e.class == Hpricot::Text
+        e.swap '<span></span>' if e.name != "a" || e.has_attribute?("href") && e["href"] !~ /^\/|(https?|s?ftp):\/\//
+      }
+      return "#{content_of(h)}\n#{'=' * h.inner_text.size}\n\n" if h.name == "h1"
+      return "#{content_of(h)}\n#{'-' * h.inner_text.size}\n\n" if h.name == "h2"
+      return "#{h.name}. #{content_of(h)}\n\n"
     end
 
     def process_links_and_anchors(e)
+      return "" if e.empty?
       inner, name, href = e.inner_html, e.get_attribute("name"), e.get_attribute("href")
 
       # is an anchor? and cannot be child of any h1..h6
@@ -57,10 +62,10 @@ module RainbowCloth
         fill_with = ["#{inner}", " -> ", "#{href}"]
       # it is an external link?
       elsif href && href =~ /^(https?|s?ftp):\/\//
-        return href.gsub(/^(https?|s?ftp):\/\//, "") == inner ? ["#{href}", "", ""] : ["#{inner}", " -> ", "#{href}"]
+        fill_with = href.gsub(/^(https?|s?ftp):\/\//, "") == inner ? ["#{href}", "", ""] : ["#{inner}", " -> ", "#{href}"]
       # links starting without /
       elsif href && href =~ /^[^\/]/
-        return ["", "#{e.inner_text}", ""]
+        fill_with = ["", "#{e.inner_text}", ""]
       # link with 3 more /
       elsif href && href.count("/") >= 3
         fill_with = ["#{inner}", " -> ", "#{href}"]
@@ -75,22 +80,22 @@ module RainbowCloth
 
         # simple page
         if context_name == "page"
-          return ["#{inner}", "", ""] if wiki_page_name == inner
-          return ["#{inner}", " -> ", "#{wiki_page_name}"]
+          return "[#{inner}]" if wiki_page_name == inner
+          return "[#{inner} -> #{wiki_page_name}]"
         end
         # group page
         if context_name != page_name
-          return ["#{context_name}", " / ", "#{wiki_page_name}"] if wiki_page_name == inner
-          return ["#{inner}", " -> ", "#{wiki_page_name}"] if context_name == "page"
-          return ["#{inner}", " -> ", "#{context_name} / #{wiki_page_name}"]
+          return "[#{context_name} / #{wiki_page_name}]" if wiki_page_name == inner
+          return "[#{inner} -> #{wiki_page_name}]" if context_name == "page"
+          return "[#{inner} -> #{context_name} / #{wiki_page_name}]"
         end 
         if inner == page_name || inner == wiki_page_name || inner == wiki_page_name.gsub(/\s/,"-")
-          return ["#{wiki_page_name}", "", ""]
+          return "[#{wiki_page_name}]"
         end
         # fall back
-        return ["#{inner}", " -> ", "#{href}"]
+        return "[#{inner} -> #{href}]"
       end
-      fill_with
+      "[%s%s%s]" % fill_with
     end
   end
 end

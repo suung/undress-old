@@ -6,11 +6,25 @@ class RainbowCloth::GreenClothTest < Test::Unit::TestCase
   end
 
   # outline
+  # don't allow link to anchors or anchor defs inside hx, greencloth -> html
+  # take cares of it, so we are only allowing links inside hx elements for now
   context "outline" do
     test "table of contents toc" do
       html = "<ul class='toc'><li class='toc1'><a href='#fruits'><span>1</span> Fruits</a></li><ul><li class='toc2'><a href='#tasty-apples'><span>1.1</span> Tasty Apples</a></li><ul><li class='toc3'><a href='green'><span>1.1.1</span> Green</a></li><li class='toc3'><a href='#red'><span>1.1.2</span> Red</a></li></ul>"
       greencloth = "[[toc]]"
       assert_renders_greencloth greencloth, html 
+    end
+
+    test "headings with links, anchors and links to anchors" do
+      html = "<h1 class='first'><a name='russian-anarchists'></a>Russian Anarchists<a class='anchor' href='#russian-anarchists'>&para;</a></h1><h2><a name='michel-bakunin'></a>Michel <a href='http://en.wikipedia.org/wiki/Mikhail_Bakunin'>Bakunin</a><a class='anchor' href='#michel-bakunin'>&para;</a></h2><h2><a name='peter-kropotkin'></a><a href='http://en.wikipedia.org/wiki/Peter_Kropotkin'>Peter</a> Kropotkin<a class='anchor' href='#peter-kropotkin'>&para;</a></h2><h1><a name='russian-american-anarchists'></a>Russian-American Anarchists<a class='anchor' href='#russian-american-anarchists'>&para;</a></h1><h2><a name='emma-goldman'></a><a href='http://en.wikipedia.org/wiki/Emma_Goldman'>Emma Goldman</a><a class='anchor' href='#emma-goldman'>&para;</a></h2><h2><a name='alexander-berkman'></a>Alexander <a href='http://en.wikipedia.org/wiki/Alexander_Berkman'>Berkman</a><a class='anchor' href='#alexander-berkman'>&para;</a></h2>"      
+      greencloth = "Russian Anarchists\n==================\n\nMichel [Bakunin -> http://en.wikipedia.org/wiki/Mikhail_Bakunin]\n--------------\n\n[Peter -> http://en.wikipedia.org/wiki/Peter_Kropotkin] Kropotkin\n---------------\n\nRussian-American Anarchists\n===========================\n\n[Emma Goldman -> http://en.wikipedia.org/wiki/Emma_Goldman]\n------------\n\nAlexander [Berkman -> http://en.wikipedia.org/wiki/Alexander_Berkman]\n-----------------\n"
+      assert_renders_greencloth greencloth, html
+    end
+
+    test "double trouble" do
+      html = "<h1 class='first'><a name='title'></a>Title<a class='anchor' href='#title'>&para;</a></h1><h3><a name='under-first'></a>Under first<a class='anchor' href='#under-first'>&para;</a></h3><h1><a name='title_2'></a>Title<a class='anchor' href='#title_2'>&para;</a></h1><h3><a name='under-second'></a>Under second<a class='anchor' href='#under-second'>&para;</a></h3>"
+      greencloth = "Title\n=====\n\nh3. Under first\n\nTitle\n=====\n\nh3. Under second\n"
+      assert_renders_greencloth greencloth, html
     end
   end
 
