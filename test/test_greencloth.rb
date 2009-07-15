@@ -1,22 +1,49 @@
 require File.expand_path(File.dirname(__FILE__) + "/test_helper")
 
-class RainbowCloth::GreenClothTest < Test::Unit::TestCase
+class Undress::GreenClothTest < Test::Unit::TestCase
   def assert_renders_greencloth(greencloth, html)
-    assert_equal greencloth, RainbowCloth.new(html, :xhtml_strict => true).to_greencloth
+    assert_equal greencloth, Undress(html, :xhtml_strict => true).to_greencloth
+  end
+
+  # code
+  context "converting code tags" do
+    test "a code inside a paragraph" do
+      html = "<p>do you like my <code>function</code>?</p>"
+      greencloth = "do you like my @function@?\n"
+      assert_renders_greencloth greencloth, html 
+    end
+
+    test "code tag inside pre tag" do
+      html = "<pre><code>def say_hi\n\tputs 'hi'\nend</code></pre>"
+      greencloth = "<pre><code>def say_hi\n\tputs 'hi'\nend</code></pre>"
+      assert_renders_greencloth greencloth, html 
+    end
+
+    test "code inside list items" do
+      html = "<ul><li><code>foo</code></li><li><code>bar</code></li><li>and <code>x</code> is also.</li></ul>"
+      greencloth = "* @foo@\n* @bar@\n* and @x@ is also.\n"
+      assert_renders_greencloth greencloth, html 
+    end
+
+    test "code tag not inside a pre and without new lines inside" do
+      html = "<code>some code inside</code>"
+      greencloth = "@some code inside@"
+      assert_renders_greencloth greencloth, html 
+    end
   end
 
   # embed and object
   # the elements pass trough but the order of the attributes change
   context "embed and object" do
     test "embed" do
-      greencloth = "do you like my embedded blip.tv <embed src=\"http://blip.tv/play/Ac3GfI+2HA\" allowfullscreen=\"true\" type=\"application/x-shockwave-flash\" allowscriptaccess=\"always\" height=\"510\" width=\"720\" />?\n"
       html       = "<p>do you like my embedded blip.tv <embed src='http://blip.tv/play/Ac3GfI+2HA' allowfullscreen='true' type='application/x-shockwave-flash' allowscriptaccess='always' height='510' width='720' />?</p>"
+      greencloth = "do you like my embedded blip.tv <embed src=\"http://blip.tv/play/Ac3GfI+2HA\" allowfullscreen=\"true\" type=\"application/x-shockwave-flash\" allowscriptaccess=\"always\" height=\"510\" width=\"720\" />?\n"
       assert_renders_greencloth greencloth, html 
     end
 
     test "object" do
-      greencloth = "do you like my embedded youtube <object height=\"344\" width=\"425\"><param name=\"movie\" value=\"http://www.youtube.com/v/suvDQoXA-TA&hl=en&fs=1\" /><param name=\"allowFullScreen\" value=\"true\" /><embed src=\"http://www.youtube.com/v/suvDQoXA-TA&hl=en&fs=1\" allowfullscreen=\"true\" type=\"application/x-shockwave-flash\" height=\"344\" width=\"425\" /></object>?\n"
       html = "<p>do you like my embedded youtube <object width='425' height='344'><param name='movie' value='http://www.youtube.com/v/suvDQoXA-TA&hl=en&fs=1' /><param name='allowFullScreen' value='true' /><embed src='http://www.youtube.com/v/suvDQoXA-TA&hl=en&fs=1' type='application/x-shockwave-flash' width='425' height='344' allowfullscreen='true' /></object>?</p>"
+      greencloth = "do you like my embedded youtube <object height=\"344\" width=\"425\"><param name=\"movie\" value=\"http://www.youtube.com/v/suvDQoXA-TA&hl=en&fs=1\" /><param name=\"allowFullScreen\" value=\"true\" /><embed src=\"http://www.youtube.com/v/suvDQoXA-TA&hl=en&fs=1\" allowfullscreen=\"true\" type=\"application/x-shockwave-flash\" height=\"344\" width=\"425\" /></object>?\n"
       assert_renders_greencloth greencloth, html 
     end
   end

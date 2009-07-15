@@ -1,10 +1,6 @@
-module RainbowCloth
-  class Document
-    def to_greencloth
-      GreenCloth.process!(doc)
-    end
-  end
+require File.expand_path(File.dirname(__FILE__) + "/textile")
 
+module Undress
   class GreenCloth < Textile
     
     # table of contents
@@ -38,7 +34,28 @@ module RainbowCloth
       "\n#{offset} #{content_of(e)}"
     }
 
-    # embed, object, param
+    # text formatting
+    rule_for(:pre) {|e|
+      if e.children.all? {|n| n.text? && n.content =~ /^\s+$/ || n.elem? && n.name == "code" }
+        "\n\n<pre><code>#{content_of(e % "code")}</code></pre>"
+      else
+        "\n\n<pre>#{content_of(e)}</pre>"
+      end
+    }
+
+    rule_for(:code) {|e|
+      if e.inner_html.match(/\n/)
+        if e.parent && e.parent.name != "pre"
+          "<pre><code>#{content_of(e)}</code></pre>" 
+        else
+          "<code>#{content_of(e)}</code>"
+        end
+      else
+        "@#{content_of(e)}@"
+      end
+    }
+
+    # objects
     rule_for(:embed) {|e|
       e.to_html
     }
@@ -111,4 +128,5 @@ module RainbowCloth
       "[%s%s%s]" % fill_with
     end
   end
+  add_markup :greencloth, GreenCloth 
 end
