@@ -5,6 +5,21 @@ class RainbowCloth::GreenClothTest < Test::Unit::TestCase
     assert_equal greencloth, RainbowCloth.new(html, :xhtml_strict => true).to_greencloth
   end
 
+  # basics
+  context "basics" do
+    test "headers" do
+      html = "<h1 class='first'>header one</h1>\n<h2>header two</h2>"
+      greencloth = "header one\n==========\n\nheader two\n----------\n"
+      assert_renders_greencloth greencloth, html 
+    end
+
+    test "headers with paragraph" do
+      html = "<p>la la la</p>\n<h1 class='first'>header one</h1>\n<h2>header two</h2>\n<p>la la la</p>"
+      greencloth = "la la la\n\nheader one\n==========\n\nheader two\n----------\n\nla la la\n"
+      assert_renders_greencloth greencloth, html 
+    end
+  end
+
   # sections
   # allways we render h1 with ==== and h2 with ----
   context "Convert sections" do
