@@ -16,12 +16,7 @@ module Undress
     end
 
     # headings
-    rule_for(:h1) {|e| process_headings(e) }
-    rule_for(:h2) {|e| process_headings(e) }
-    rule_for(:h3) {|e| process_headings(e) }
-    rule_for(:h4) {|e| process_headings(e) }
-    rule_for(:h5) {|e| process_headings(e) }
-    rule_for(:h6) {|e| process_headings(e) }
+    rule_for(:h1, :h2, :h3, :h4, :h5, :h6) {|e| process_headings(e) }
 
     # inline elements
     rule_for(:a) {|e|
