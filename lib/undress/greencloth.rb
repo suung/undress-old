@@ -1,15 +1,14 @@
 require File.expand_path(File.dirname(__FILE__) + "/textile")
 
 module Undress
-
-  ALLOWED_TAGS = [
-    'div', 'a', 'img', 'br', 'i', 'u', 'b', 'pre', 'kbd', 'code', 'cite', 'strong', 'em',
-    'ins', 'sup', 'sub', 'del', 'table', 'tr', 'td', 'th', 'ol', 'ul', 'li', 'p', 'span',
-    'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'notextile', 'blockquote', 'object', 'embed',
-    'param', 'acronym', 'dd', 'dl', 'dt'
-  ]
-
   class GreenCloth < Textile
+
+    Undress::ALLOWED_TAGS = [
+      'div', 'a', 'img', 'br', 'i', 'u', 'b', 'pre', 'kbd', 'code', 'cite', 'strong', 'em',
+      'ins', 'sup', 'sub', 'del', 'table', 'tr', 'td', 'th', 'ol', 'ul', 'li', 'p', 'span',
+      'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'notextile', 'blockquote', 'object', 'embed',
+      'param', 'acronym', 'dd', 'dl', 'dt'
+    ]
     
     # table of contents
     pre_processing("ul.toc") do |toc|
@@ -63,16 +62,8 @@ module Undress
       end
     }
 
-    # objects
-    rule_for(:embed) {|e|
-      e.to_html
-    }
-
-    rule_for(:object) {|e|
-      e.to_html
-    }
-    
-    rule_for(:param) {|e|
+    # passing trough objects 
+    rule_for(:embed, :object, :param) {|e|
       e.to_html
     }
 
