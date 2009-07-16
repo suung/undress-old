@@ -1,6 +1,14 @@
 require File.expand_path(File.dirname(__FILE__) + "/textile")
 
 module Undress
+
+  ALLOWED_TAGS = [
+    'div', 'a', 'img', 'br', 'i', 'u', 'b', 'pre', 'kbd', 'code', 'cite', 'strong', 'em',
+    'ins', 'sup', 'sub', 'del', 'table', 'tr', 'td', 'th', 'ol', 'ul', 'li', 'p', 'span',
+    'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'notextile', 'blockquote', 'object', 'embed',
+    'param', 'acronym', 'dd', 'dl', 'dt'
+  ]
+
   class GreenCloth < Textile
     
     # table of contents
@@ -20,7 +28,7 @@ module Undress
     rule_for(:a) {|e|
       process_links_and_anchors(e)
     }
-    
+
     # lists
     rule_for(:li) {|e|
       offset = ""

@@ -5,6 +5,21 @@ class Undress::GreenClothTest < Test::Unit::TestCase
     assert_equal greencloth, Undress(html, :xhtml_strict => true).to_greencloth
   end
 
+  # unallowed tags
+  context "remove unallowed tags" do
+    test "remove a head tag" do
+      html = "<html><head><title>Title</title></head>"
+      greencloth = ""
+      assert_renders_greencloth greencloth, html 
+    end
+
+    test "remove a script tag" do
+      html = "<div>Some script inside a<script type='text/javascript'>window.alert('alert')</script> paragraph</div>"
+      greencloth = "Some script inside a paragraph"
+      assert_renders_greencloth greencloth, html 
+    end
+  end
+
   # code
   context "converting code tags" do
     test "a code inside a paragraph" do
