@@ -32,9 +32,11 @@ undress.gemspec
 lib/undress.rb
 lib/undress/grammar.rb
 lib/undress/textile.rb
+lib/undress/greencloth.rb
 lib/core_ext/object.rb
 test/test_helper.rb
 test/test_grammar.rb
 test/test_textile.rb
+test/test_greencloth.rb
 ]
 end
