@@ -34,7 +34,7 @@ Will produce
 
 == Get it
 
-    gem install undress
+    gem install zevarito-undress
 
 == License
 
