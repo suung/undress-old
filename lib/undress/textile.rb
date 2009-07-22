@@ -3,13 +3,6 @@ require File.expand_path(File.dirname(__FILE__) + "/../undress")
 module Undress
   class Textile < Grammar
 
-    # delete tabs and newlines from inside elements
-    pre_processing("*") do |e| 
-      if e.elem? && e.parent.doc? && e.inner_html != "" && e.name != "pre"
-        e.inner_html = e.inner_html.gsub(/\n|\t/,"")
-      end
-    end
-
     # whitespace handling
     post_processing(/\n\n+/, "\n\n")
     post_processing(/\A\s+/, "")

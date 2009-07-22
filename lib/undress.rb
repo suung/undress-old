@@ -27,11 +27,24 @@ module Undress
   class Document #:nodoc:
     def initialize(html, options)
       @doc = Hpricot(html, options)
+      cleanup_indentation
     end
 
     def self.add_markup(name, grammar)
       define_method "to_#{name}" do
         grammar.process!(@doc)
+      end
+    end
+
+    private
+
+    # Delete tabs, newlines and more than 2 spaces from inside elements
+    # except pre or code elements
+    def cleanup_indentation
+      (@doc/"*").each do |e| 
+        if e.elem? && e.inner_html != "" && e.name !~ (/pre|code/) && e.children_of_type("pre") == []
+          e.inner_html = e.inner_html.gsub(/\n|\t/,"").gsub(/\s+/," ").strip
+        end
       end
     end
   end
