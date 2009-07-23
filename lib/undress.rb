@@ -28,6 +28,7 @@ module Undress
     def initialize(html, options)
       @doc = Hpricot(html, options)
       cleanup_indentation
+      xhtmlize!
     end
 
     def self.add_markup(name, grammar)
@@ -37,6 +38,14 @@ module Undress
     end
 
     private
+    
+    # We try to fix those elements which aren't write as xhtml standard but more
+    # important we can't parse it ok without correct it before.
+    def xhtmlize!
+      (@doc/"ul|ol").each do |list|
+        fixup_list(list) if list.parent != "li" && list.parent.name !~ /ul|ol/
+      end
+    end
 
     # Delete tabs, newlines and more than 2 spaces from inside elements
     # except pre or code elements
@@ -44,6 +53,21 @@ module Undress
       (@doc/"*").each do |e| 
         if e.elem? && e.inner_html != "" && e.name !~ (/pre|code/) && e.children_of_type("pre") == []
           e.inner_html = e.inner_html.gsub(/\n|\t/,"").gsub(/\s+/," ").strip
+        end
+      end
+    end
+
+    # Fixup a badly nested list such as <ul> sibling to <li> instead inside of <li>.
+    def fixup_list(list)
+      list.children.each {|e| fixup_list(e) if e.elem? && e.name =~ /ol|ul/}
+
+      if list.parent.name != "li"
+        li_side = list.next_sibling     if list.next_sibling     && list.next_sibling.name     == "li"
+        li_side = list.previous_sibling if list.previous_sibling && list.previous_sibling.name == "li"
+
+        if li_side
+          li_side.inner_html = "#{li_side.inner_html}#{list.to_html}"
+          list.parent.replace_child(list, "")
         end
       end
     end

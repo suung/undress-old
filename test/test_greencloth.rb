@@ -2,7 +2,43 @@ require File.expand_path(File.dirname(__FILE__) + "/test_helper")
 
 class Undress::GreenClothTest < Test::Unit::TestCase
   def assert_renders_greencloth(greencloth, html)
-    assert_equal greencloth, Undress(html, :xhtml_strict => true).to_greencloth
+    assert_equal greencloth, Undress(html).to_greencloth
+  end
+
+  # TODO:
+  # this is ok to ensure invalid html -> to greencloth but xhtmlize! must have
+  # tests on test_undress or something too
+  #
+  context "parsing not valid xhtml documents" do
+    test "a nested invalid unordered list" do
+      html = "<ul><li>item 1</li><li>item 2</li><ul><li>nested 1</li><li>nested 2</li></ul><li>item 3</li></ul>"
+      greencloth = "* item 1\n* item 2\n** nested 1\n** nested 2\n* item 3\n"
+      assert_renders_greencloth greencloth, html 
+    end
+    
+    test "a nested invalid ordered list" do
+      html = "<ol><li>item 1</li><li>item 2</li><ol><li>nested 1</li><li>nested 2</li></ol><li>item 3</li></ol>"
+      greencloth = "# item 1\n# item 2\n## nested 1\n## nested 2\n# item 3\n"
+      assert_renders_greencloth greencloth, html 
+    end
+    
+    test "a nested invalid mixed list with 3 levels" do
+      html = "<ul><li>item 1</li><li>item 2</li><ol><li>nested 1</li><li>nested 2</li><ul><li>nested2 1</li><li>nested2 2</li></ul></ol><li>item 3</li></ul>"
+      greencloth = "* item 1\n* item 2\n*# nested 1\n*# nested 2\n*#* nested2 1\n*#* nested2 2\n* item 3\n"
+      assert_renders_greencloth greencloth, html 
+    end
+
+    test "a nested invalid mixed list" do
+      html = "<ul><li>item 1</li><li>item 2</li><ol><li>nested 1</li><li>nested 2</li></ol><li>item 3</li></ul>"
+      greencloth = "* item 1\n* item 2\n*# nested 1\n*# nested 2\n* item 3\n"
+      assert_renders_greencloth greencloth, html 
+    end
+
+    test "2 badly nested list inside" do
+      html = "<ul><li>item 1</li><li>item 2</li><ul><li>nested 1</li><ul><li>item 1x</li><li>item 2x</li></ul><li>nested 2</li></ul><li>item 3</li></ul>"
+      greencloth = "* item 1\n* item 2\n** nested 1\n*** item 1x\n*** item 2x\n** nested 2\n* item 3\n"
+      assert_renders_greencloth greencloth, html 
+    end
   end
 
   # unallowed tags
