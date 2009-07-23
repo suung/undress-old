@@ -1,1 +1,2 @@
-* Invalid nested <ul> and <ol> lists are converted too
+* Fix on removing new lines, tabs and spaces on element and tag nodes.
+* Invalid nested <ul> and <ol> lists are converted too.

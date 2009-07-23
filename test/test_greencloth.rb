@@ -5,6 +5,18 @@ class Undress::GreenClothTest < Test::Unit::TestCase
     assert_equal greencloth, Undress(html).to_greencloth
   end
 
+  context "parsing badly indented documents" do
+    test "badly indent doc" do
+      html = "<ul>
+                <li>foo</li>
+                <li>bar</li>
+                <li>and x is also.</li>
+              </ul>"
+      greencloth = "* foo\n* bar\n* and x is also.\n"
+      assert_renders_greencloth greencloth, html 
+    end
+  end
+
   # TODO:
   # this is ok to ensure invalid html -> to greencloth but xhtmlize! must have
   # tests on test_undress or something too
@@ -88,13 +100,13 @@ class Undress::GreenClothTest < Test::Unit::TestCase
   context "embed and object" do
     test "embed" do
       html       = "<p>do you like my embedded blip.tv <embed src='http://blip.tv/play/Ac3GfI+2HA' allowfullscreen='true' type='application/x-shockwave-flash' allowscriptaccess='always' height='510' width='720' />?</p>"
-      greencloth = "do you like my embedded blip.tv <embed src=\"http://blip.tv/play/Ac3GfI+2HA\" allowfullscreen=\"true\" type=\"application/x-shockwave-flash\" allowscriptaccess=\"always\" height=\"510\" width=\"720\" />?\n"
+      greencloth = "do you like my embedded blip.tv <embed allowfullscreen=\"true\" src=\"http://blip.tv/play/Ac3GfI+2HA\" allowscriptaccess=\"always\" type=\"application/x-shockwave-flash\" height=\"510\" width=\"720\" />?\n"
       assert_renders_greencloth greencloth, html 
     end
 
     test "object" do
       html = "<p>do you like my embedded youtube <object width='425' height='344'><param name='movie' value='http://www.youtube.com/v/suvDQoXA-TA&hl=en&fs=1' /><param name='allowFullScreen' value='true' /><embed src='http://www.youtube.com/v/suvDQoXA-TA&hl=en&fs=1' type='application/x-shockwave-flash' width='425' height='344' allowfullscreen='true' /></object>?</p>"
-      greencloth = "do you like my embedded youtube <object height=\"344\" width=\"425\"><param name=\"movie\" value=\"http://www.youtube.com/v/suvDQoXA-TA&hl=en&fs=1\" /><param name=\"allowFullScreen\" value=\"true\" /><embed src=\"http://www.youtube.com/v/suvDQoXA-TA&hl=en&fs=1\" allowfullscreen=\"true\" type=\"application/x-shockwave-flash\" height=\"344\" width=\"425\" /></object>?\n"
+      greencloth = "do you like my embedded youtube <object height=\"344\" width=\"425\"><param name=\"movie\" value=\"http://www.youtube.com/v/suvDQoXA-TA&hl=en&fs=1\" /><param name=\"allowFullScreen\" value=\"true\" /><embed allowfullscreen=\"true\" src=\"http://www.youtube.com/v/suvDQoXA-TA&hl=en&fs=1\" type=\"application/x-shockwave-flash\" height=\"344\" width=\"425\" /></object>?\n"
       assert_renders_greencloth greencloth, html 
     end
   end
