@@ -31,10 +31,10 @@ class Undress::GreenClothTest < Test::Unit::TestCase
     end
 
     test "style 'underline' should be converted to <ins> in <span> and <p> elements" do
-	    html = "<p>with <span style='font-style: underline;'>some</span> in the <span style='font-style: underline;'>paragraph</span></p>"
+	    html = "<p>with <span style='text-decoration: underline;'>some</span> in the <span style='text-decoration: underline;'>paragraph</span></p>"
       greencloth = "with +some+ in the +paragraph+\n"
       assert_renders_greencloth greencloth, html 
-	    html = "<p style='font-style: underline;'>with some in the paragraph</p>"
+	    html = "<p style='text-decoration: underline;'>with some in the paragraph</p>"
       greencloth = "+with some in the paragraph+"
       assert_renders_greencloth greencloth, html 
     end
