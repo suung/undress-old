@@ -21,6 +21,12 @@ class Undress::GreenClothTest < Test::Unit::TestCase
   # this is ok to ensure invalid html -> to greencloth but xhtmlize! must have
   # tests on test_undress or something too
   context "parsing not valid xhtml documents" do
+    test "font-weight=bold styles in <span> elements should be <strong>" do
+      html = "<p>some text <span style='font-weight=bold'>bold</span> with style</p>"
+      greencloth = "some text *bold* with style\n"
+      assert_renders_greencloth greencloth, html 
+    end
+
     test "style 'line-through' should be converted to <del> in <span> and <p> elements" do
 	    html = "<p>with <span style='text-decoration: line-through;'>some</span> in the <span style='text-decoration-: line-through;'>paragraph</span></p>"
       greencloth = "with -some- in the -paragraph-\n"

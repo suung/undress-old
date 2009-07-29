@@ -51,6 +51,8 @@ module Undress
       (@doc/"*[@style*='underline']").each    { |e| e.swap "<ins>#{e.inner_html}</ins>" if e.name.match(/p|span/) } 
 
       (@doc/"*[@style*='line-through']").each { |e| e.swap "<del>#{e.inner_html}</del>" if e.name.match(/p|span/) }
+
+      (@doc/"span[@style*='bold']").each      { |e| e.swap "<strong>#{e.inner_html}</strong>" }
     end
 
     # Delete tabs, newlines and more than 2 spaces from inside elements
