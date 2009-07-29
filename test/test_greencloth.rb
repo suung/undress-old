@@ -20,8 +20,34 @@ class Undress::GreenClothTest < Test::Unit::TestCase
   # TODO:
   # this is ok to ensure invalid html -> to greencloth but xhtmlize! must have
   # tests on test_undress or something too
-  #
   context "parsing not valid xhtml documents" do
+    test "style 'line-through' should be converted to <del> in <span> and <p> elements" do
+	    html = "<p>with <span style='text-decoration: line-through;'>some</span> in the <span style='text-decoration-: line-through;'>paragraph</span></p>"
+      greencloth = "with -some- in the -paragraph-\n"
+      assert_renders_greencloth greencloth, html 
+	    html = "<p style='text-decoration: line-through;'>with some in the paragraph</p>"
+      greencloth = "-with some in the paragraph-"
+      assert_renders_greencloth greencloth, html 
+    end
+
+    test "style 'underline' should be converted to <ins> in <span> and <p> elements" do
+	    html = "<p>with <span style='font-style: underline;'>some</span> in the <span style='font-style: underline;'>paragraph</span></p>"
+      greencloth = "with +some+ in the +paragraph+\n"
+      assert_renders_greencloth greencloth, html 
+	    html = "<p style='font-style: underline;'>with some in the paragraph</p>"
+      greencloth = "+with some in the paragraph+"
+      assert_renders_greencloth greencloth, html 
+    end
+
+    test "style 'italic' should be converted to <em> in <span> and <p> elements" do
+	    html = "<p>with <span style='font-style: italic;'>some</span> in the <span style='font-style: italic;'>paragraph</span></p>"
+      greencloth = "with _some_ in the _paragraph_\n"
+      assert_renders_greencloth greencloth, html 
+	    html = "<p style='font-style: italic;'>with some in the paragraph</p>"
+      greencloth = "_with some in the paragraph_"
+      assert_renders_greencloth greencloth, html 
+    end
+
     test "a nested invalid unordered list" do
       html = "<ul><li>item 1</li><li>item 2</li><ul><li>nested 1</li><li>nested 2</li></ul><li>item 3</li></ul>"
       greencloth = "* item 1\n* item 2\n** nested 1\n** nested 2\n* item 3\n"

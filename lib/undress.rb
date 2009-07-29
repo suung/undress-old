@@ -45,6 +45,12 @@ module Undress
       (@doc/"ul|ol").each do |list|
         fixup_list(list) if list.parent != "li" && list.parent.name !~ /ul|ol/
       end
+
+      (@doc/"*[@style*='italic']").each       { |e| e.swap "<em>#{e.inner_html}</em>" if e.name.match(/p|span/) }
+      
+      (@doc/"*[@style*='underline']").each    { |e| e.swap "<ins>#{e.inner_html}</ins>" if e.name.match(/p|span/) } 
+
+      (@doc/"*[@style*='line-through']").each { |e| e.swap "<del>#{e.inner_html}</del>" if e.name.match(/p|span/) }
     end
 
     # Delete tabs, newlines and more than 2 spaces from inside elements
