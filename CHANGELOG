@@ -1,3 +1,8 @@
+0.2.1
+
+* <span> with more than one styling bold|italic|underline|line-through
+* <p> styling Italics, Underlines, Lines thorough and Bold are converted.
+
 0.2
 
 * Fix on removing new lines, tabs and spaces on element and tag nodes.
