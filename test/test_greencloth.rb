@@ -25,6 +25,9 @@ class Undress::GreenClothTest < Test::Unit::TestCase
       html = "<p>some text <span style='font-weight=bold'>bold</span> with style</p>"
       greencloth = "some text *bold* with style\n"
       assert_renders_greencloth greencloth, html 
+      html = "<p style='font-weight=bold'>some text bold with style</p>"
+      greencloth = "*some text bold with style*\n"
+      assert_renders_greencloth greencloth, html 
     end
 
     test "style 'line-through' should be converted to <del> in <span> elements" do
@@ -32,7 +35,7 @@ class Undress::GreenClothTest < Test::Unit::TestCase
       greencloth = "with -some- in the -paragraph-\n"
       assert_renders_greencloth greencloth, html 
 	    html = "<p style='text-decoration: line-through;'>with some in the paragraph</p>"
-      greencloth = "with some in the paragraph\n"
+      greencloth = "-with some in the paragraph-\n"
       assert_renders_greencloth greencloth, html 
     end
 
@@ -41,7 +44,7 @@ class Undress::GreenClothTest < Test::Unit::TestCase
       greencloth = "with +some+ in the +paragraph+\n"
       assert_renders_greencloth greencloth, html 
 	    html = "<p style='text-decoration: underline;'>with some in the paragraph</p>"
-      greencloth = "with some in the paragraph\n"
+      greencloth = "+with some in the paragraph+\n"
       assert_renders_greencloth greencloth, html 
     end
 
@@ -50,7 +53,7 @@ class Undress::GreenClothTest < Test::Unit::TestCase
       greencloth = "with _some_ in the _paragraph_\n"
       assert_renders_greencloth greencloth, html 
 	    html = "<p style='font-style: italic;'>with some in the paragraph</p>"
-      greencloth = "with some in the paragraph\n"
+      greencloth = "_with some in the paragraph_\n"
       assert_renders_greencloth greencloth, html 
     end
 

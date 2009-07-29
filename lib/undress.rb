@@ -46,13 +46,9 @@ module Undress
         fixup_list(list) if list.parent != "li" && list.parent.name !~ /ul|ol/
       end
 
-      (@doc/"span[@style*='italic']").each       { |e| e.swap "<em>#{e.inner_html}</em>" }
-      
-      (@doc/"span[@style*='underline']").each    { |e| e.swap "<ins>#{e.inner_html}</ins>" } 
-
-      (@doc/"span[@style*='line-through']").each { |e| e.swap "<del>#{e.inner_html}</del>" }
-
-      (@doc/"span[@style*='bold']").each      { |e| e.swap "<strong>#{e.inner_html}</strong>" }
+      (@doc/"p|span").each do |e|
+        fixup_span_with_styles(e)
+      end
     end
 
     # Delete tabs, newlines and more than 2 spaces from inside elements
@@ -65,6 +61,18 @@ module Undress
           e.content = e.content.gsub(/\n|\t/,"").gsub(/\s+/," ").gsub(/^\s$/, "")
         end
       end
+    end
+
+    # For those elements like <span> if they are used to represent bold, italic
+    # such as those used on wysiwyg editors, we remove that after convert to not
+    # use them on the final convertion.
+    def fixup_span_with_styles(e)
+        return if !e.has_attribute?("style")
+
+        if e["style"] =~ /italic/        then e.inner_html = "<em>#{e.inner_html}</em>"          end
+        if e["style"] =~ /underline/     then e.inner_html = "<ins>#{e.inner_html}</ins>"        end
+        if e["style"] =~ /line-through/  then e.inner_html = "<del>#{e.inner_html}</del>"        end
+        if e["style"] =~ /bold/          then e.inner_html = "<strong>#{e.inner_html}</strong>"  end
     end
 
     # Fixup a badly nested list such as <ul> sibling to <li> instead inside of <li>.
