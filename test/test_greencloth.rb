@@ -27,30 +27,30 @@ class Undress::GreenClothTest < Test::Unit::TestCase
       assert_renders_greencloth greencloth, html 
     end
 
-    test "style 'line-through' should be converted to <del> in <span> and <p> elements" do
+    test "style 'line-through' should be converted to <del> in <span> elements" do
 	    html = "<p>with <span style='text-decoration: line-through;'>some</span> in the <span style='text-decoration-: line-through;'>paragraph</span></p>"
       greencloth = "with -some- in the -paragraph-\n"
       assert_renders_greencloth greencloth, html 
 	    html = "<p style='text-decoration: line-through;'>with some in the paragraph</p>"
-      greencloth = "-with some in the paragraph-"
+      greencloth = "with some in the paragraph\n"
       assert_renders_greencloth greencloth, html 
     end
 
-    test "style 'underline' should be converted to <ins> in <span> and <p> elements" do
+    test "style 'underline' should be converted to <ins> in <span> elements" do
 	    html = "<p>with <span style='text-decoration: underline;'>some</span> in the <span style='text-decoration: underline;'>paragraph</span></p>"
       greencloth = "with +some+ in the +paragraph+\n"
       assert_renders_greencloth greencloth, html 
 	    html = "<p style='text-decoration: underline;'>with some in the paragraph</p>"
-      greencloth = "+with some in the paragraph+"
+      greencloth = "with some in the paragraph\n"
       assert_renders_greencloth greencloth, html 
     end
 
-    test "style 'italic' should be converted to <em> in <span> and <p> elements" do
+    test "style 'italic' should be converted to <em> in <span> elements" do
 	    html = "<p>with <span style='font-style: italic;'>some</span> in the <span style='font-style: italic;'>paragraph</span></p>"
       greencloth = "with _some_ in the _paragraph_\n"
       assert_renders_greencloth greencloth, html 
 	    html = "<p style='font-style: italic;'>with some in the paragraph</p>"
-      greencloth = "_with some in the paragraph_"
+      greencloth = "with some in the paragraph\n"
       assert_renders_greencloth greencloth, html 
     end
 

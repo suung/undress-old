@@ -46,11 +46,11 @@ module Undress
         fixup_list(list) if list.parent != "li" && list.parent.name !~ /ul|ol/
       end
 
-      (@doc/"*[@style*='italic']").each       { |e| e.swap "<em>#{e.inner_html}</em>" if e.name.match(/p|span/) }
+      (@doc/"span[@style*='italic']").each       { |e| e.swap "<em>#{e.inner_html}</em>" }
       
-      (@doc/"*[@style*='underline']").each    { |e| e.swap "<ins>#{e.inner_html}</ins>" if e.name.match(/p|span/) } 
+      (@doc/"span[@style*='underline']").each    { |e| e.swap "<ins>#{e.inner_html}</ins>" } 
 
-      (@doc/"*[@style*='line-through']").each { |e| e.swap "<del>#{e.inner_html}</del>" if e.name.match(/p|span/) }
+      (@doc/"span[@style*='line-through']").each { |e| e.swap "<del>#{e.inner_html}</del>" }
 
       (@doc/"span[@style*='bold']").each      { |e| e.swap "<strong>#{e.inner_html}</strong>" }
     end
