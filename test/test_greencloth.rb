@@ -158,7 +158,7 @@ class Undress::GreenClothTest < Test::Unit::TestCase
   context "outline" do
     test "table of contents toc" do
       html = "<ul class='toc'><li class='toc1'><a href='#fruits'><span>1</span> Fruits</a></li><ul><li class='toc2'><a href='#tasty-apples'><span>1.1</span> Tasty Apples</a></li><ul><li class='toc3'><a href='green'><span>1.1.1</span> Green</a></li><li class='toc3'><a href='#red'><span>1.1.2</span> Red</a></li></ul>"
-      greencloth = "[[toc]]"
+      greencloth = "[[toc]]\n"
       assert_renders_greencloth greencloth, html 
     end
 

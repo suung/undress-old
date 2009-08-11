@@ -12,7 +12,7 @@ module Undress
     
     # table of contents
     pre_processing("ul.toc") do |toc|
-      toc.swap "[[toc]]"
+      toc.swap "[[toc]]\n"
     end
 
     # headings
