@@ -58,7 +58,8 @@ module Undress
         if e.elem? && e.inner_html != "" && e.name !~ (/pre|code/) && e.children.size == 0 
           e.inner_html = e.inner_html.gsub(/\n|\t/,"").gsub(/\s+/," ")
         elsif e.text? && e.parent.name !~ /pre|code/
-          e.content = e.content.gsub(/\n|\t/,"").gsub(/\s+/," ").gsub(/^\s$/, "")
+          e.content = e.content.gsub(/\n|\t/,"").gsub(/\s+/," ")
+          e.content = e.content.gsub(/^\s+$/, "") if e.next_node && e.next_node.name != "span"
         end
       end
     end

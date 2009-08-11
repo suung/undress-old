@@ -21,6 +21,12 @@ class Undress::GreenClothTest < Test::Unit::TestCase
   # this is ok to ensure invalid html -> to greencloth but xhtmlize! must have
   # tests on test_undress or something too
   context "parsing not valid xhtml documents" do
+    test "space between 2 spans with styles" do
+      html = "<p><span style='font-weight: bold;'>bold</span> <span style='font-style: italic;'>italic</span></p>"
+      greencloth = "*bold* _italic_\n"
+      assert_renders_greencloth greencloth, html 
+    end
+
     test "a <span> bold, italic, underline, line-through at the same time" do
       html = "<p>some text <span style='font-weight:bold; font-style:italic; text-decoration:underline; text-decoration:line-through'>bold</span> with style</p>"
       greencloth = "some text *-+_bold_+-* with style\n"
