@@ -12,6 +12,12 @@ module Undress
       end
 
       context "convert parts of a word" do
+        test "some" do
+          textile = "s[*o*]me\n"
+          html = "<p>s<span style='font-weight:bold;'>o</span>me</p>"
+          assert_renders_textile textile, html
+        end
+
         test "italics" do
           textile = "a perfect wo[_r_]ld\n"
           html = "<p>a perfect wo<em>r</em>ld</p>"

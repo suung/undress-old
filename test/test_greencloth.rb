@@ -28,8 +28,8 @@ class Undress::GreenClothTest < Test::Unit::TestCase
     end
 
     test "a <span> bold, italic, underline, line-through at the same time" do
-      html = "<p>some text <span style='font-weight:bold; font-style:italic; text-decoration:underline; text-decoration:line-through'>bold</span> with style</p>"
-      greencloth = "some text *-+_bold_+-* with style\n"
+      html = "<p>some text <span style='font-weight:bold; font-style:italic; text-decoration:underline;'>bold</span> with style</p>"
+      greencloth = "some text *+_bold_+* with style\n"
       assert_renders_greencloth greencloth, html 
     end
 
@@ -43,7 +43,7 @@ class Undress::GreenClothTest < Test::Unit::TestCase
     end
 
     test "style 'line-through' should be converted to <del> in <span> elements" do
-	    html = "<p>with <span style='text-decoration: line-through;'>some</span> in the <span style='text-decoration-: line-through;'>paragraph</span></p>"
+	    html = "<p>with <span style='text-decoration: line-through;'>some</span> in the <span style='text-decoration: line-through;'>paragraph</span></p>"
       greencloth = "with -some- in the -paragraph-\n"
       assert_renders_greencloth greencloth, html 
 	    html = "<p style='text-decoration: line-through;'>with some in the paragraph</p>"

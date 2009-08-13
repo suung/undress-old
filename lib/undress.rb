@@ -12,6 +12,8 @@ end
 
 module Undress
 
+  INLINE_ELEMENTS = ['span', 'b', 'strong', 'i', 'em', 'ins', 'del','strike', 'abbr', 'acronym', 'cite', 'code', 'label', 'sub', 'sup']
+
   # Register a markup language. The name will become the method used to convert
   # HTML to this markup language: for example registering the name +:textile+
   # gives you <tt>Undress(code).to_textile</tt>, registering +:markdown+ would
@@ -55,7 +57,7 @@ module Undress
           e.inner_html = e.inner_html.gsub(/\n|\t/,"").gsub(/\s+/," ")
         elsif e.text? && e.parent.name !~ /pre|code/
           e.content = e.content.gsub(/\n|\t/,"").gsub(/\s+/," ")
-          e.content = e.content.gsub(/^\s+$/, "") if e.next_node && e.next_node.name != "span"
+          e.content = e.content.gsub(/^\s+$/, "") if e.next_node && ! INLINE_ELEMENTS.include?(e.next_node.name)
         end
       end
     end
@@ -64,12 +66,29 @@ module Undress
     # such as those used on wysiwyg editors, we remove that after convert to not
     # use them on the final convertion.
     def fixup_span_with_styles(e)
-        return if !e.has_attribute?("style")
+      return if !e.has_attribute?("style")
 
-        if e["style"] =~ /italic/        then e.inner_html = "<em>#{e.inner_html}</em>"          end
-        if e["style"] =~ /underline/     then e.inner_html = "<ins>#{e.inner_html}</ins>"        end
-        if e["style"] =~ /line-through/  then e.inner_html = "<del>#{e.inner_html}</del>"        end
-        if e["style"] =~ /bold/          then e.inner_html = "<strong>#{e.inner_html}</strong>"  end
+      if e.get_style("font-style") == "italic"
+        e.inner_html = "<em>#{e.inner_html}</em>"
+        e.del_style("font-style")
+      end
+
+      if e.get_style("text-decoration") == "underline"
+        e.inner_html = "<ins>#{e.inner_html}</ins>"
+        e.del_style("text-decoration")
+      end
+
+      if e.get_style("text-decoration") == "line-through"
+        e.inner_html = "<del>#{e.inner_html}</del>"
+        e.del_style("text-decoration")
+      end
+
+      if e.get_style("font-weight") == "bold"
+        e.inner_html = "<strong>#{e.inner_html}</strong>"
+        e.del_style("font-weight")
+      end
+
+      e.swap e.inner_html if e.styles.empty? && e.name == "span"
     end
 
     # Fixup a badly nested list such as <ul> sibling to <li> instead inside of <li>.

@@ -15,7 +15,7 @@ class HpricotExtensionsTest < Test::Unit::TestCase
     end
     
     test "delete an specific style from an element" do
-      @p_with_styles.del_style("font-weight", "bold")
+      @p_with_styles.del_style("font-weight")
       assert_equal({"color" => "#000", "font-style" => "italic"}, @p_with_styles.styles.to_h)
     end
 

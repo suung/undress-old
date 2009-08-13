@@ -6,8 +6,16 @@ module ::Hpricot #:nodoc:
       styles[name.to_s] = value.fast_xs
     end
 
-    def del_style(name, value)
-      styles.delete(name) if styles.has_style?(name) and styles[name] == value
+    def del_style(name)
+      styles.delete(name)
+    end
+
+    def has_style?(name)
+      styles.has_style?(name)
+    end
+
+    def get_style(name)
+      styles[name]
     end
   end
 
@@ -18,8 +26,9 @@ module ::Hpricot #:nodoc:
 
     def delete(key)
       p = properties.dup
-      p.delete key
-      @element.set_attribute("style", "#{p.map {|pty,val| "#{pty}:#{val}"}.join(";")}")
+      if p.delete key
+        @element.set_attribute("style", "#{p.map {|pty,val| "#{pty}:#{val}"}.join(";")}")
+      end
     end
 
     def [] key
@@ -29,6 +38,10 @@ module ::Hpricot #:nodoc:
     def []= k, v 
       s = properties.map {|pty,val| "#{pty}:#{val}"}.join(";")
       @element.set_attribute("style", "#{s.chomp(";")};#{k}:#{v}".sub(/^\;/, ""))
+    end
+
+    def empty?
+      return true if properties.size == 0
     end
 
     def has_style?(key)
