@@ -12,10 +12,6 @@ end
 
 module Undress
 
-  # if this array is empty we allow all tags
-  # if the processed node name not exist in this array we drop it
-  ALLOWED_TAGS = []
-
   # Register a markup language. The name will become the method used to convert
   # HTML to this markup language: for example registering the name +:textile+
   # gives you <tt>Undress(code).to_textile</tt>, registering +:markdown+ would

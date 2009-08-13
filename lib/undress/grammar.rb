@@ -89,7 +89,7 @@ module Undress
         if node.text?
           node.to_html
         elsif node.elem? 
-          send node.name.to_sym, node if ALLOWED_TAGS.empty? || ALLOWED_TAGS.include?(node.name)
+          send node.name.to_sym, node if ! defined?(ALLOWED_TAGS) || ALLOWED_TAGS.empty? || ALLOWED_TAGS.include?(node.name)
         else
           ""
         end
