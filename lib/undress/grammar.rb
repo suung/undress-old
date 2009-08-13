@@ -120,6 +120,25 @@ module Undress
         (node.next.text? && node.next.to_s =~ /^\s+/)
     end
 
+    # Helper to determine if a node contents a whole word
+    # useful to convert for example a letter italic inside a word
+    def complete_word?(node)
+      return true if ! node.previous_node || ! node.next_node
+      
+      p, n = node.previous_node, node.next_node
+
+      if p.respond_to?(:content)
+        return false if p.content       !~ /\s$/
+      elsif p.respond_to(:inner_html)
+        return false if p.inner_html    !~ /\s$/
+      elsif n.respond_to(:content)
+        return false if n.content       !~ /^\s/
+      elsif n.respond_to(:inner_html)
+        return false if n.content       !~ /^\s/
+      end
+      true
+    end
+
     def method_missing(tag, node, *args) #:nodoc:
       process(node.children)
     end

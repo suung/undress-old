@@ -11,6 +11,32 @@ module Undress
         assert_renders_textile "h2. _this is *very* important_\n", "<h2><em>this is <strong>very</strong> important</em></h2>"
       end
 
+      context "convert parts of a word" do
+        test "italics" do
+          textile = "a perfect wo[_r_]ld\n"
+          html = "<p>a perfect wo<em>r</em>ld</p>"
+          assert_renders_textile textile, html
+        end
+        
+        test "bolds" do
+          textile = "a perfect wo[*r*]ld\n"
+          html = "<p>a perfect wo<strong>r</strong>ld</p>"
+          assert_renders_textile textile, html
+        end
+        
+        test "underlines" do
+          textile = "a perfect wo[+r+]ld\n"
+          html = "<p>a perfect wo<ins>r</ins>ld</p>"
+          assert_renders_textile textile, html
+        end
+        
+        test "line through" do
+          textile = "a perfect wo[-r-]ld\n"
+          html = "<p>a perfect wo<del>r</del>ld</p>"
+          assert_renders_textile textile, html
+        end
+      end
+
       context "inline elements" do
         test "converts <strong> tags" do
           assert_renders_textile "*foo bar*", "<strong>foo bar</strong>"

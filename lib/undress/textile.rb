@@ -28,14 +28,15 @@ module Undress
       alt = e.has_attribute?("alt") ? "(#{e["alt"]})" : ""
       "!#{e["src"]}#{alt}!"
     }
-    rule_for(:strong)  {|e| "*#{content_of(e)}*" }
-    rule_for(:em)      {|e| "_#{content_of(e)}_" }
+    
+    rule_for(:strong)  {|e| complete_word?(e) ? "*#{content_of(e)}*" : "[*#{content_of(e)}*]"}
+    rule_for(:em)      {|e| complete_word?(e) ? "_#{content_of(e)}_" : "[_#{content_of(e)}_]"}
     rule_for(:code)    {|e| "@#{content_of(e)}@" }
     rule_for(:cite)    {|e| "??#{content_of(e)}??" }
     rule_for(:sup)     {|e| surrounded_by_whitespace?(e) ? "^#{content_of(e)}^" : "[^#{content_of(e)}^]" }
     rule_for(:sub)     {|e| surrounded_by_whitespace?(e) ? "~#{content_of(e)}~" : "[~#{content_of(e)}~]" }
-    rule_for(:ins)     {|e| "+#{content_of(e)}+" }
-    rule_for(:del)     {|e| "-#{content_of(e)}-" }
+    rule_for(:ins)     {|e| complete_word?(e) ? "+#{content_of(e)}+" : "[+#{content_of(e)}+]"}
+    rule_for(:del)     {|e| complete_word?(e) ? "-#{content_of(e)}-" : "[-#{content_of(e)}-]"}
     rule_for(:acronym) {|e| e.has_attribute?("title") ? "#{content_of(e)}(#{e["title"]})" : content_of(e) }
 
     # text formatting and layout
