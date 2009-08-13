@@ -1,3 +1,4 @@
+* Move hpricot extensions from undress.rb to a single file
 * Convert to Textile single formatted letters inside a word
 
 0.2.2

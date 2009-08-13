@@ -1,4 +1,4 @@
-require "hpricot"
+require File.expand_path(File.dirname(__FILE__) + "/hpricot_ext")
 require File.expand_path(File.dirname(__FILE__) + "/core_ext/object")
 require File.expand_path(File.dirname(__FILE__) + "/undress/grammar")
 
@@ -84,19 +84,6 @@ module Undress
           li_side.inner_html = "#{li_side.inner_html}#{list.to_html}"
           list.parent.replace_child(list, "")
         end
-      end
-    end
-  end
-
-  module ::Hpricot #:nodoc:
-    class Elem #:nodoc:
-      def ancestors
-        node, ancestors = parent, Elements[]
-        while node.respond_to?(:parent) && node.parent
-          ancestors << node
-          node = node.parent
-        end
-        ancestors
       end
     end
   end
