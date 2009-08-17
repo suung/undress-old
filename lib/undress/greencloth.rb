@@ -5,9 +5,9 @@ module Undress
 
     Undress::ALLOWED_TAGS = [
       'div', 'a', 'img', 'br', 'i', 'u', 'b', 'pre', 'kbd', 'code', 'cite', 'strong', 'em',
-      'ins', 'sup', 'sub', 'del', 'table', 'tr', 'td', 'th', 'ol', 'ul', 'li', 'p', 'span',
-      'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'notextile', 'blockquote', 'object', 'embed',
-      'param', 'acronym', 'dd', 'dl', 'dt'
+      'ins', 'sup', 'sub', 'del', 'table', 'tbody', 'thead', 'tr', 'td', 'th', 'ol', 'ul',
+      'li', 'p', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'notextile', 'blockquote',
+      'object', 'embed', 'param', 'acronym', 'dd', 'dl', 'dt'
     ]
     
     # table of contents
