@@ -11,6 +11,14 @@ module Undress
         assert_renders_textile "h2. _this is *very* important_\n", "<h2><em>this is <strong>very</strong> important</em></h2>"
       end
 
+      context "convert enetities" do
+        test "&nbsp;" do
+          textile = "some word\n"
+          html = "<p>some&nbsp;word</p>"
+          assert_renders_textile textile, html
+        end
+      end
+
       context "convert parts of a word" do
         test "some" do
           textile = "s[*o*]me\n"

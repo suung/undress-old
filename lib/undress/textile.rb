@@ -2,6 +2,8 @@ require File.expand_path(File.dirname(__FILE__) + "/../undress")
 
 module Undress
   class Textile < Grammar
+    # entities
+    post_processing(/&nbsp;/, " ")
 
     # whitespace handling
     post_processing(/\n\n+/, "\n\n")
