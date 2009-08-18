@@ -116,8 +116,8 @@ module Undress
     # Helper method that tells you if the given DOM node is immediately
     # surrounded by whitespace.
     def surrounded_by_whitespace?(node)
-      (node.previous.text? && node.previous.to_s =~ /\s+$/) ||
-        (node.next.text? && node.next.to_s =~ /^\s+/)
+      (node.previous && node.previous.text? && node.previous.to_s =~ /\s+$/) ||
+        (node.next && node.next.text? && node.next.to_s =~ /^\s+/)
     end
 
     # Helper to determine if a node contents a whole word
