@@ -129,11 +129,11 @@ module Undress
 
       if p.respond_to?(:content)
         return false if p.content       !~ /\s$/
-      elsif p.respond_to(:inner_html)
+      elsif p.respond_to?(:inner_html)
         return false if p.inner_html    !~ /\s$/
-      elsif n.respond_to(:content)
+      elsif n.respond_to?(:content)
         return false if n.content       !~ /^\s/
-      elsif n.respond_to(:inner_html)
+      elsif n.respond_to?(:inner_html)
         return false if n.content       !~ /^\s/
       end
       true
