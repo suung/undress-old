@@ -7,8 +7,70 @@ module Undress
     end
 
     context "Converting HTML to textile" do
+      context "some troubles with empty tags" do
+        test "with pre" do
+          html = "<pre></pre>"
+          textile = "<pre></pre>"
+          assert_renders_textile textile, html
+        end
+
+        test "with p" do
+          html = "<p></p>"
+          textile = ""
+          assert_renders_textile textile, html
+        end
+      end
+
       test "converts nested tags" do
         assert_renders_textile "h2. _this is *very* important_\n", "<h2><em>this is <strong>very</strong> important</em></h2>"
+      end
+
+      context "some troubles" do
+        test "with sup" do
+          html = "<p>e = mc<sup>2</sup></p>"
+          textile = "e = mc[^2^]\n"
+          assert_renders_textile textile, html
+        end
+      end
+
+      context "convert enetities" do
+        test "&nbsp;" do
+          textile = "some word\n"
+          html = "<p>some&nbsp;word</p>"
+          assert_renders_textile textile, html
+        end
+      end
+
+      context "convert parts of a word" do
+        test "some" do
+          textile = "s[*o*]me\n"
+          html = "<p>s<span style='font-weight:bold;'>o</span>me</p>"
+          assert_renders_textile textile, html
+        end
+
+        test "italics" do
+          textile = "a perfect wo[_r_]ld\n"
+          html = "<p>a perfect wo<em>r</em>ld</p>"
+          assert_renders_textile textile, html
+        end
+        
+        test "bolds" do
+          textile = "a perfect wo[*r*]ld\n"
+          html = "<p>a perfect wo<strong>r</strong>ld</p>"
+          assert_renders_textile textile, html
+        end
+        
+        test "underlines" do
+          textile = "a perfect wo[+r+]ld\n"
+          html = "<p>a perfect wo<ins>r</ins>ld</p>"
+          assert_renders_textile textile, html
+        end
+        
+        test "line through" do
+          textile = "a perfect wo[-r-]ld\n"
+          html = "<p>a perfect wo<del>r</del>ld</p>"
+          assert_renders_textile textile, html
+        end
       end
 
       context "inline elements" do
@@ -93,6 +155,13 @@ module Undress
         test "converts blockquotes" do
           assert_renders_textile "bq. foo bar\n", "<blockquote><div>foo bar</div></blockquote>"
         end
+
+        test "a p inside a blockquote" do
+          html = "<blockquote>  <p>this text<br />becomes not blockquoted in round trip.</p>  </blockquote>"
+          greencloth = "bq. this text\nbecomes not blockquoted in round trip.\n"
+          assert_renders_textile greencloth, html
+        end
+        
       end
 
       context "headers" do

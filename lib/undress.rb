@@ -1,4 +1,4 @@
-require "hpricot"
+require File.expand_path(File.dirname(__FILE__) + "/hpricot_ext")
 require File.expand_path(File.dirname(__FILE__) + "/core_ext/object")
 require File.expand_path(File.dirname(__FILE__) + "/undress/grammar")
 
@@ -11,6 +11,9 @@ def Undress(html, options={})
 end
 
 module Undress
+
+  INLINE_ELEMENTS = ['span', 'b', 'strong', 'i', 'em', 'ins', 'del','strike', 'abbr', 'acronym', 'cite', 'code', 'label', 'sub', 'sup']
+
   # Register a markup language. The name will become the method used to convert
   # HTML to this markup language: for example registering the name +:textile+
   # gives you <tt>Undress(code).to_textile</tt>, registering +:markdown+ would
@@ -22,6 +25,8 @@ module Undress
   class Document #:nodoc:
     def initialize(html, options)
       @doc = Hpricot(html, options)
+      xhtmlize!
+      cleanup_indentation
     end
 
     def self.add_markup(name, grammar)
@@ -29,17 +34,75 @@ module Undress
         grammar.process!(@doc)
       end
     end
-  end
 
-  module ::Hpricot #:nodoc:
-    class Elem #:nodoc:
-      def ancestors
-        node, ancestors = parent, Elements[]
-        while node.respond_to?(:parent) && node.parent
-          ancestors << node
-          node = node.parent
+    private
+    
+    # We try to fix those elements which aren't write as xhtml standard but more
+    # important we can't parse it ok without correct it before.
+    def xhtmlize!
+      (@doc/"ul|ol").each do |list|
+        fixup_list(list) if list.parent != "li" && list.parent.name !~ /ul|ol/
+      end
+
+      (@doc/"p|span").each do |e|
+        fixup_span_with_styles(e)
+      end
+    end
+
+    # Delete tabs, newlines and more than 2 spaces from inside elements
+    # except <pre> or <code> elements
+    def cleanup_indentation
+      (@doc/"*").each do |e| 
+        if e.elem? && e.inner_html != "" && e.name !~ (/pre|code/) && e.children.size == 0 
+          e.inner_html = e.inner_html.gsub(/\n|\t/,"").gsub(/\s+/," ")
+        elsif e.text? && e.parent.name !~ /pre|code/
+          e.content = e.content.gsub(/\n|\t/,"").gsub(/\s+/," ")
+          e.content = e.content.gsub(/^\s+$/, "") if e.next_node && ! INLINE_ELEMENTS.include?(e.next_node.name)
         end
-        ancestors
+      end
+    end
+
+    # For those elements like <span> if they are used to represent bold, italic
+    # such as those used on wysiwyg editors, we remove that after convert to not
+    # use them on the final convertion.
+    def fixup_span_with_styles(e)
+      return if !e.has_attribute?("style")
+
+      if e.get_style("font-style") == "italic"
+        e.inner_html = "<em>#{e.inner_html}</em>"
+        e.del_style("font-style")
+      end
+
+      if e.get_style("text-decoration") == "underline"
+        e.inner_html = "<ins>#{e.inner_html}</ins>"
+        e.del_style("text-decoration")
+      end
+
+      if e.get_style("text-decoration") == "line-through"
+        e.inner_html = "<del>#{e.inner_html}</del>"
+        e.del_style("text-decoration")
+      end
+
+      if e.get_style("font-weight") == "bold"
+        e.inner_html = "<strong>#{e.inner_html}</strong>"
+        e.del_style("font-weight")
+      end
+
+      e.swap e.inner_html if e.styles.empty? && e.name == "span"
+    end
+
+    # Fixup a badly nested list such as <ul> sibling to <li> instead inside of <li>.
+    def fixup_list(list)
+      list.children.each {|e| fixup_list(e) if e.elem? && e.name =~ /ol|ul/}
+
+      if list.parent.name != "li"
+        li_side = list.next_sibling     if list.next_sibling     && list.next_sibling.name     == "li"
+        li_side = list.previous_sibling if list.previous_sibling && list.previous_sibling.name == "li"
+
+        if li_side
+          li_side.inner_html = "#{li_side.inner_html}#{list.to_html}"
+          list.parent.replace_child(list, "")
+        end
       end
     end
   end

@@ -105,8 +105,8 @@ module Undress
       Array(nodes).map do |node|
         if node.text?
           node.to_html
-        elsif node.elem?
-          send node.name.to_sym, node
+        elsif node.elem? 
+          send node.name.to_sym, node if ! defined?(ALLOWED_TAGS) || ALLOWED_TAGS.empty? || ALLOWED_TAGS.include?(node.name)
         else
           ""
         end
@@ -133,8 +133,27 @@ module Undress
     # Helper method that tells you if the given DOM node is immediately
     # surrounded by whitespace.
     def surrounded_by_whitespace?(node)
-      (node.previous.text? && node.previous.to_s =~ /\s+$/) ||
-        (node.next.text? && node.next.to_s =~ /^\s+/)
+      (node.previous && node.previous.text? && node.previous.to_s =~ /\s+$/) ||
+        (node.next && node.next.text? && node.next.to_s =~ /^\s+/)
+    end
+
+    # Helper to determine if a node contents a whole word
+    # useful to convert for example a letter italic inside a word
+    def complete_word?(node)
+      return true if ! node.previous_node || ! node.next_node
+      
+      p, n = node.previous_node, node.next_node
+
+      if p.respond_to?(:content)
+        return false if p.content       !~ /\s$/
+      elsif p.respond_to?(:inner_html)
+        return false if p.inner_html    !~ /\s$/
+      elsif n.respond_to?(:content)
+        return false if n.content       !~ /^\s/
+      elsif n.respond_to?(:inner_html)
+        return false if n.content       !~ /^\s/
+      end
+      true
     end
 
     # Hash of attributes, according to the white list. By default, no attributes

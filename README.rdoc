@@ -1,7 +1,6 @@
 = Undress
 
-Easily convert back HTML to Textile, Markdown, RDoc or whatever other
-markup language you like.
+Easily convert back HTML to Textile, Greencloth.
 
     require "undress/textile"
 
@@ -11,7 +10,7 @@ markup language you like.
       <h2>Supported Markup Languages so far:</h2>
       <ul>
         <li>Textile</li>
-        <li>And more to come :P</li>
+        <li>Greencloth</li>
       </ul>
     html
 
@@ -26,18 +25,18 @@ Will produce
     h2. Supported Markup Languages so far:
 
     * Textile
-    * And more to come :P
+    * Greencloth
 
 == Supported Markup Languages
 
-For now the only language supported is Textile. But I'll be happy to accept
-patches to add more languages :)
+* Textile
+* Greencloth, see [http://we.riseup.net]
 
 == Get it
 
-    gem install undress
+    gem install zevarito-undress
 
 == License
 
-Authors:: Nicolas Sanguinetti (foca[http://github.com/foca])
+Authors:: Nicolas Sanguinetti (foca[http://github.com/foca]), Alvaro Gil (zevarito[http://github.com/zevarito])
 License:: MIT (Check LICENSE for details)

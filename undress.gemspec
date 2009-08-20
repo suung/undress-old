@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name    = "undress"
-  s.version = "0.1.1"
-  s.date    = "2009-07-21"
+  s.version = "0.2.4"
+  s.date    = "2009-07-29"
 
   s.description = "Simply translate HTML to Textile, Markdown, or whatever other markup format you need"
   s.summary     = "Convert HTML into other markup languages"
@@ -26,15 +26,20 @@ Gem::Specification.new do |s|
   s.files = %w[
 .gitignore
 LICENSE
+CHANGELOG
 README.rdoc
 Rakefile
 undress.gemspec
 lib/undress.rb
+lib/hpricot_ext.rb
 lib/undress/grammar.rb
 lib/undress/textile.rb
+lib/undress/greencloth.rb
 lib/core_ext/object.rb
 test/test_helper.rb
 test/test_grammar.rb
 test/test_textile.rb
+test/test_greencloth.rb
+test/test_hpricot_ext.rb
 ]
 end
