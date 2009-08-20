@@ -4,6 +4,9 @@ module Undress
   class Textile < Grammar
     whitelist_attributes :class, :id, :lang, :style, :colspan, :rowspan
 
+    # entities
+    post_processing(/&nbsp;/, " ")
+
     # whitespace handling
     post_processing(/\n\n+/, "\n\n")
     post_processing(/\A\s+/, "")
@@ -29,22 +32,26 @@ module Undress
       alt = e.has_attribute?("alt") ? "(#{e["alt"]})" : ""
       "!#{e["src"]}#{alt}!"
     }
-    rule_for(:strong)  {|e| "*#{attributes(e)}#{content_of(e)}*" }
-    rule_for(:em)      {|e| "_#{attributes(e)}#{content_of(e)}_" }
+    rule_for(:strong)  {|e| complete_word?(e) ? "*#{attributes(e)}#{content_of(e)}*" : "[*#{attributes(e)}#{content_of(e)}*]"}
+    rule_for(:em)      {|e| complete_word?(e) ? "_#{attributes(e)}#{content_of(e)}_" : "[_#{attributes(e)}#{content_of(e)}_]"}
     rule_for(:code)    {|e| "@#{attributes(e)}#{content_of(e)}@" }
     rule_for(:cite)    {|e| "??#{attributes(e)}#{content_of(e)}??" }
     rule_for(:sup)     {|e| surrounded_by_whitespace?(e) ? "^#{attributes(e)}#{content_of(e)}^" : "[^#{attributes(e)}#{content_of(e)}^]" }
     rule_for(:sub)     {|e| surrounded_by_whitespace?(e) ? "~#{attributes(e)}#{content_of(e)}~" : "[~#{attributes(e)}#{content_of(e)}~]" }
-    rule_for(:ins)     {|e| "+#{attributes(e)}#{content_of(e)}+" }
-    rule_for(:del)     {|e| "-#{attributes(e)}#{content_of(e)}-" }
+    rule_for(:ins)     {|e| complete_word?(e) ? "+#{attributes(e)}#{content_of(e)}+" : "[+#{attributes(e)}#{content_of(e)}+]"}
+    rule_for(:del)     {|e| complete_word?(e) ? "-#{attributes(e)}#{content_of(e)}-" : "[-#{attributes(e)}#{content_of(e)}-]"}
     rule_for(:acronym) {|e| e.has_attribute?("title") ? "#{content_of(e)}(#{e["title"]})" : content_of(e) }
+    
 
     # text formatting and layout
-    rule_for(:p)          {|e| "\n\n#{attributes(e) != "" ? "p#{attributes(e)}. " : ""}#{content_of(e)}\n\n" }
+    rule_for(:p) do |e| 
+      at = attributes(e) != "" ? "p#{at}#{attributes(e)}. " : ""
+      e.parent && e.parent.name == "blockquote" ? "#{at}#{content_of(e)}\n\n" : "\n\n#{at}#{content_of(e)}\n\n"
+    end
     rule_for(:br)         {|e| "\n" }
     rule_for(:blockquote) {|e| "\n\nbq#{attributes(e)}. #{content_of(e)}\n\n" }
     rule_for(:pre)        {|e|
-      if e.children.all? {|n| n.text? && n.content =~ /^\s+$/ || n.elem? && n.name == "code" }
+      if e.children && e.children.all? {|n| n.text? && n.content =~ /^\s+$/ || n.elem? && n.name == "code" }
         "\n\npc#{attributes(e)}. #{content_of(e % "code")}\n\n"
       else
         "<pre>#{content_of(e)}</pre>"
