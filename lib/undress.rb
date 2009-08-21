@@ -44,7 +44,7 @@ module Undress
       (@doc/"p|span").each  {|e| fixup_span_with_styles(e)}
       (@doc/"strike").each  {|e| e.change_tag! "del"}
       (@doc/"u").each       {|e| e.change_tag! "ins"}
-      (@doc/"td|th").each   {|e| fixup_cells_with_spaces(e)}
+      (@doc/"td|th").each   {|e| fixup_cells_with_spaces_and_new_lines(e)}
     end
 
     # Delete tabs, newlines and more than 2 spaces from inside elements
@@ -105,8 +105,11 @@ module Undress
     end
   
     # spaces beetween td and th elements break textile formatting
-    def fixup_cells_with_spaces(e)
+    # <br> aren't allowed
+    def fixup_cells_with_spaces_and_new_lines(e)
+      e.search("br").remove
       e.next_node.content = "" if e.next_node && e.next_node.text?
+      e.previous_node.content = "" if e.previous_node && e.previous_node.text?
     end
   end
 end
