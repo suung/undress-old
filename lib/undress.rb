@@ -40,10 +40,11 @@ module Undress
     # We try to fix those elements which aren't write as xhtml standard but more
     # important we can't parse it ok without correct it before.
     def xhtmlize!
-      (@doc/"ul|ol").each {|list| fixup_list(list) if list.parent != "li" && list.parent.name !~ /ul|ol/}
-      (@doc/"p|span").each {|e| fixup_span_with_styles(e)}
-      (@doc/"strike").each {|e| e.change_tag! "del"}
-      (@doc/"u").each {|e| e.change_tag! "ins"}
+      (@doc/"ul|ol").each   {|list| fixup_list(list) if list.parent != "li" && list.parent.name !~ /ul|ol/}
+      (@doc/"p|span").each  {|e| fixup_span_with_styles(e)}
+      (@doc/"strike").each  {|e| e.change_tag! "del"}
+      (@doc/"u").each       {|e| e.change_tag! "ins"}
+      (@doc/"td|th").each   {|e| fixup_cells_with_spaces(e)}
     end
 
     # Delete tabs, newlines and more than 2 spaces from inside elements
@@ -101,6 +102,11 @@ module Undress
           list.parent.replace_child(list, "")
         end
       end
+    end
+  
+    # spaces beetween td and th elements break textile formatting
+    def fixup_cells_with_spaces(e)
+      e.next_node.content = "" if e.next_node && e.next_node.text?
     end
   end
 end
