@@ -60,6 +60,12 @@ module Undress
           assert_renders_textile textile, html
         end
 
+        test "other case with strongs" do
+          html = "<strong>bb<em>ii</em></strong>"
+          textile = "*bb[_ii_]*"
+          assert_renders_textile textile, html
+        end
+
         test "italics" do
           textile = "a perfect wo[_r_]ld\n"
           html = "<p>a perfect wo<em>r</em>ld</p>"
