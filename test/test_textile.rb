@@ -48,6 +48,12 @@ module Undress
           assert_renders_textile textile, html
         end
         
+        test "wihout a letter in headers" do
+          html = "<h1>a<em>bc</em></h1>"
+          textile = "h1. a[_bc_]\n"
+          assert_renders_textile textile, html
+        end
+
         test "without a letter after the tag" do
           textile = "x[*x xx*]"
           html = "x<strong>x xx</strong>"
