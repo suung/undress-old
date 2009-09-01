@@ -60,12 +60,6 @@ module Undress
           assert_renders_textile textile, html
         end
 
-        test "other case with strongs" do
-          html = "<strong>bb<em>ii</em></strong>"
-          textile = "*bb[_ii_]*"
-          assert_renders_textile textile, html
-        end
-
         test "italics" do
           textile = "a perfect wo[_r_]ld\n"
           html = "<p>a perfect wo<em>r</em>ld</p>"
@@ -237,6 +231,12 @@ module Undress
       end
 
       context "tables" do
+        test "converts table with empty cell" do
+          html = "<table>  <tbody>  <tr>  <td>&nbsp;a</td>  <td> </td>  </tr>  <tr>  <td>&nbsp;b</td>  <td>&nbsp;c</td>  </tr>  </tbody>  </table>"
+          textile = "|a||\n|b|c|\n"
+          assert_renders_textile textile, html
+        end
+
         test "converts a simple table" do
           assert_renders_textile "|foo|bar|baz|\n|1|2|3|\n",
                                  "<table><tr><td>foo</td><td>bar</td><td>baz</td></tr><tr><td>1</td><td>2</td><td>3</td></tr></table>"
