@@ -92,29 +92,31 @@ module Undress
 
     def attributes(node) #:nodoc:
       filtered = super(node)
+      
+      if filtered
+        
+        if filtered.has_key?(:colspan)
+          return "\\#{filtered[:colspan]}. "
+        end
 
-      if filtered.has_key?(:colspan)
-        return "\\#{filtered[:colspan]}. "
-      end
+        if filtered.has_key?(:rowspan)
+          return "/#{filtered[:rowspan]}. "
+        end
 
-      if filtered.has_key?(:rowspan)
-        return "/#{filtered[:rowspan]}. "
-      end
+        if filtered.has_key?(:lang)
+          return "[#{filtered[:lang]}]"
+        end
 
-      if filtered.has_key?(:lang)
-        return "[#{filtered[:lang]}]"
-      end
+        if filtered.has_key?(:class) || filtered.has_key?(:id)
+          klass = filtered.fetch(:class, "")
+          id = filtered.fetch(:id, false) ? "#" + filtered[:id] : ""
+          return "(#{klass}#{id})"
+        end
 
-      if filtered.has_key?(:class) || filtered.has_key?(:id)
-        klass = filtered.fetch(:class, "")
-        id = filtered.fetch(:id, false) ? "#" + filtered[:id] : ""
-        return "(#{klass}#{id})"
-      end
-
-      if filtered.has_key?(:style)
-        return "{#{filtered[:style]}}"
-      end
-
+        if filtered.has_key?(:style)
+          return "{#{filtered[:style]}}"
+        end
+      end  
       ""
     end
   end
