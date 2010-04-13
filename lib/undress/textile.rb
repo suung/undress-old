@@ -92,7 +92,7 @@ module Undress
 
     def attributes(node) #:nodoc:
       filtered = super(node)
-      
+
       if filtered
         
         if filtered.has_key?(:colspan)
@@ -116,6 +116,7 @@ module Undress
         if filtered.has_key?(:style)
           return "{#{filtered[:style]}}"
         end
+        ""
       end  
       ""
     end
