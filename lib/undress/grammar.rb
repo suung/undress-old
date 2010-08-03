@@ -1,10 +1,11 @@
+require 'ruby-debug'
 module Undress
   # Grammars give you a DSL to declare how to convert an HTML document into a
   # different markup language.
   class Grammar
     def self.inherited(base) # :nodoc:
-      base.instance_variable_set(:@post_processing_rules, post_processing_rules)
-      base.instance_variable_set(:@pre_processing_rules, pre_processing_rules)
+      base.instance_variable_set(:@post_processing_rules, post_processing_rules.dup)
+      base.instance_variable_set(:@pre_processing_rules, pre_processing_rules.dup)
     end
 
     # Add a parsing rule for a group of html tags.
@@ -42,7 +43,14 @@ module Undress
     #     post_processing(/\n\n+/, "\n\n") # compress more than two newlines
     #     post_processing(/whatever/) { ... }
     def self.post_processing(regexp, replacement = nil, &handler) #:yields: matched_string
-      post_processing_rules[regexp] = replacement || handler
+      raise "You can not pass both string & block to post_processing" if !replacement.nil? && !handler.nil?
+      if handler
+        replacement = post_processing_rules[regexp] || :"post_processor_#{post_processing_rules.keys.length}"
+        post_processing_rules[regexp] = replacement
+        define_method replacement, &handler
+      else
+        post_processing_rules[regexp] = replacement
+      end
     end
 
     # Add a pre-processing rule to your parser.
@@ -58,22 +66,9 @@ module Undress
     # Would replace any unordered lists with the class +toc+ for a
     # paragraph containing the code <tt>[[toc]]</tt>.
     def self.pre_processing(selector, &handler) # :yields: element
-      pre_processing_rules[selector] = handler
-    end
-
-    # Set a list of attributes you wish to whitelist
-    #
-    # Any attribute not in this list at the moment of parsing will be ignored by the
-    # parser. The method Grammar#attributes(node) will return a hash of the filtered
-    # attributes. Read its documentation for more details.
-    #
-    #     whitelist_attributes :id, :class, :lang
-    def self.whitelist_attributes(*attrs)
-      @whitelisted_attributes = attrs
-    end
-
-    def self.whitelisted_attributes #:nodoc:
-      @whitelisted_attributes || []
+      replacement = pre_processing_rules[selector] || :"pre_processor_#{pre_processing_rules.keys.length}"
+      define_method replacement, &handler
+      pre_processing_rules[selector] = replacement
     end
 
     def self.post_processing_rules #:nodoc:
@@ -90,12 +85,10 @@ module Undress
 
     attr_reader :pre_processing_rules #:nodoc:
     attr_reader :post_processing_rules #:nodoc:
-    attr_reader :whitelisted_attributes #:nodoc:
 
     def initialize #:nodoc:
       @pre_processing_rules = self.class.pre_processing_rules.dup
       @post_processing_rules = self.class.post_processing_rules.dup
-      @whitelisted_attributes = self.class.whitelisted_attributes.dup
     end
 
     # Process a DOM node, converting it to your markup language according to
@@ -115,12 +108,19 @@ module Undress
 
     def process!(node) #:nodoc:
       pre_processing_rules.each do |selector, handler|
-        node.search(selector).each(&handler)
+        node.search(selector).each { |node| send handler, node }
       end
+
 
       process(node.children).tap do |text|
         post_processing_rules.each do |rule, handler|
-          handler.is_a?(String) ?  text.gsub!(rule, handler) : text.gsub!(rule, &handler)
+          if handler.is_a? Symbol
+            text.gsub! rule do |match|
+              send handler, match, @document
+            end
+          else
+            text.gsub!(rule, handler)
+          end
         end
       end
     end
@@ -156,29 +156,6 @@ module Undress
         return false if n.inner_html    !~ /^\s/
       end
       true
-    end
-
-    # Hash of attributes, according to the white list. By default, no attributes
-    # are whitelisted, so you must set which ones to whitelist on each grammar.
-    #
-    # Supposing you set <tt>:id</tt> and <tt>:class</tt> as your
-    # <tt>whitelisted_attributes</tt>, and you have a node representing this
-    # HTML:
-    #
-    #     <p lang="en" class="greeting">Hello World</p>
-    #
-    # Then the method would return:
-    #
-    #     { :class => "greeting" }
-    #
-    # You can override this method in each grammar and call +super+ if you
-    # will represent your attributes consistently across all nodes (for
-    # example, +Textile+ always shows class an id inside parenthesis.)
-    def attributes(node)
-      node.attributes.to_hash.inject({}) do |attrs,(key,value)|
-        attrs[key.to_sym] = value if whitelisted_attributes.include?(key.to_sym)
-        attrs
-      end
     end
 
     def method_missing(tag, node, *args) #:nodoc:
